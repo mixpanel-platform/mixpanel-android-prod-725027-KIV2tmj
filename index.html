@@ -7,9 +7,70 @@
     <script src="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.js"></script>
   </head>
   <body class="mixpanel-platform-body">
-    <h1>Hello, World!</h1>
+    
+    <div class="mixpanel-platform-section">
+      <h1>iOS Main Screen Banner View</h1>
+      <div style="clear: both;"></div>
+      <div id="Androidmainscreenbannerview" class="report"></div>
+      <h1>iOS Main Screen Banner Click</h1>
+      <div style="clear: both;"></div>
+      <div id="Androidmainscreenbannerclick" class="report"></div>
+      <h1>iOS Offers Screen Banner View</h1>
+      <div style="clear: both;"></div>
+      <div id="Androidoffersscreenbannerview" class="report"></div>
+      <h1>iOS Offers Screen Banner Click</h1>
+      <div style="clear: both;"></div>
+      <div id="Androidoffersscreenbannerclick" class="report"></div>
+     </div>
+    <style>
+    h1 {
+      font-size: 20px;
+      margin: 10px 0;
+    }
+    .report {
+     margin: 15px 0; 
+    }
+    </style>
     <script>
-      // Run queries and display results here
+    
+     function getUniqueAndTotal(eventName, div) {
+      var chart = $(div).MPChart({
+        chartType: 'line',
+      });
+      var totalParams = {
+        from: moment().subtract('4', 'days'),
+        to: moment(),
+        type: 'general',
+        unit: 'hour',
+      };
+      var uniqueParams = {
+        from: moment().subtract('4', 'days'),
+        to: moment(),
+        type: 'unique',
+        unit: 'hour',
+      };
+      var resultObject = {'Unique': {}, 'Total': {}};
+      MP.api.segment(eventName, totalParams).done(function(totalResults) {
+        resultObject.Total = totalResults.values()[eventName];
+        console.log(resultObject);
+        MP.api.segment(eventName, uniqueParams).done(function(uniqueResults) {
+          resultObject.Unique = uniqueResults.values()[eventName];
+          console.log(resultObject);
+          chart.MPChart('setData', resultObject);
+        })
+      });
+    }
+    
+    
+      runQuery();
+       function runQuery() {
+         getUniqueAndTotal('MainScreenBannerView', '#Androidmainscreenbannerview');
+         getUniqueAndTotal('MainScreenBannerClick', '#Androidmainscreenbannerclick');
+         getUniqueAndTotal('OffersScreenBannerView', '#Androidoffersscreenbannerview');
+         getUniqueAndTotal('OffersScreenBannerClick', '#Androidoffersscreenbannerclick');
+        
+        }
+
     </script>
   </body>
 </html>
